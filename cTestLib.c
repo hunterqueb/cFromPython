@@ -47,10 +47,19 @@ void print2dArray(int *array,int N)
     // cause problems when you go to implement
     // indexing goes down rows first
     N = (N * N);
-    printf("N: %d \n",N);
     int i; int j;
     for(i = 0;i<N;i++)
     {
         printf(" %d",array[i]);
+    }
+}
+
+void returnByRefArray(int *array,int N)
+{
+    N = N * N;
+    int i;
+    for(i=0;i<N;i++)
+    {
+        array[i] = array[i] * N;
     }
 }
