@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "cTestLib.h"
 
 double cmult(int int_param, double float_param)
@@ -62,4 +63,20 @@ void returnByRefArray(int *array,int N)
     {
         array[i] = array[i] * N;
     }
+}
+
+// returning arrays are not possible, even trying to get this from python is hard
+// this is an example of what not to do
+// to store memory pass the array by reference and modify in script, have the function return as void
+// this means that the memory to be passed to a function like rk45 needs to be dynamic...
+
+double *createArray(void)
+{
+    double *arr = malloc(10*sizeof(double));
+
+    for(int i = 0;i<10;i++)
+    {
+        arr[i] = i;
+    }
+    return arr;
 }

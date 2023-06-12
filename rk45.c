@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <math.h>
 
+#define INIT_ARRAY_LEN 50
 
 void f(double t, double y[], double fReturn[])
 {
@@ -44,9 +45,13 @@ int main(void)
 
     int problemDim = 4;
 
+    double *sol = (double *)malloc(INIT_ARRAY_LEN * problemDim * sizeof(double));
+    int row = 0, col = 0;
+    int arrSize = INIT_ARRAY_LEN;
+
     // time length, tolerance
     double a = 0;        // endpoints in calculation
-    double b = 10;
+    double b = 1000;
     double Tol = 1.0E-8; // error control tolerance
 
     // utility variable definitions
@@ -54,7 +59,7 @@ int main(void)
     double k1[problemDim], k2[problemDim], k3[problemDim];
     double k4[problemDim], k5[problemDim], k6[problemDim];
     double err[problemDim];
-    int i, j, n = 20;
+    int i, j, n = 1000;
 
     // initializing function and initial conditions
     double y[problemDim], fReturn[problemDim], ydumb[problemDim];
@@ -141,7 +146,9 @@ int main(void)
         // end of a loop, here is where you would report the variables
         out2File(t,y,problemDim,fp);
         out2Term(t,y,problemDim);
+        saveArray(y,sol);
     }
     fclose(fp);
+    free(sol);
     return 0;
 }

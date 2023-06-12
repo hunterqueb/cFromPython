@@ -24,6 +24,8 @@ libc.print2dArray(np.ctypeslib.as_ctypes(z),3)
 libc.returnByRefArray(np.ctypeslib.as_ctypes(z),3)
 libc.print2dArray(np.ctypeslib.as_ctypes(z),3)
 
+arrayFromC = libc.createArray()
+print()
 # cStart = time.time()
 # libc.c_speed()
 # cEnd = time.time()
