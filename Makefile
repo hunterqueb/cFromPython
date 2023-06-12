@@ -1,8 +1,9 @@
-all: cTestLib.o rk45.o
+all: cTestLib.o cRK4.o
 
 cTestLib.o: cTestLib.c
 	gcc -c -fPIC cTestLib.c -o cTestLib.o
 	gcc cTestLib.o -shared -o lib_test.so
-
-rk45.o: rk45.cpp
-	g++ rk45.cpp -o rk45.o
+	
+cRK4.o: rk4.c
+	gcc -c -fPIC rk4.c -o rk4.o
+	gcc rk4.o -shared -o lib_rk4.so
