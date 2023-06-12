@@ -24,7 +24,7 @@ void c_speed(void)
 
 void changeByRef(int *a)
 {
-    *a = 12;
+    *a = 14;
     return;
 }
 
@@ -47,7 +47,7 @@ void print2dArray(int *array,int N)
     // cause problems when you go to implement
     // indexing goes down rows first
     N = (N * N);
-    int i; int j;
+    int i;
     for(i = 0;i<N;i++)
     {
         printf(" %d",array[i]);

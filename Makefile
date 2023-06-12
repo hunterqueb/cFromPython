@@ -1,4 +1,5 @@
-all: cTestLib.so 
+all: cTestLib.o
 
-cTestLib.so: cTestLib.c
-	gcc -shared -o lib_test.so -fPIC cTestLib.c
+cTestLib.o: cTestLib.c
+	gcc -c -fPIC cTestLib.c -o cTestLib.o
+	gcc cTestLib.o -shared -o lib_test.so
