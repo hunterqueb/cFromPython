@@ -11,6 +11,9 @@ void f(double t, double y[], double fReturn[])
 
 void out2Term(double t, double y[], int problemDim)
 {
+    /*
+    Debug function to print differential equation solution to console.
+    */
     int i;
     printf("%f\t", t);
     for (i = 0; i < problemDim; i++)
@@ -20,8 +23,25 @@ void out2Term(double t, double y[], int problemDim)
     printf("\n");
 }
 
-void rk4(void func(double, double[] ,double[]), double IC[], double a, double b, double h, int problemDim)
+void rk4(void func(double, double[] ,double[]), double *IC, double a, double b, double h, int problemDim, double *sol)
 {
+    /*
+    This function implements a Runge-Kutta 4th order integrator in C.
+    Inputs: func - function pointer of the differential equation
+            IC - double array that holds the initial conditions of the desired solution\
+            a - start time of integration in seconds
+            b - end time of integration in seconds 
+            h - time step size in seconds
+            problemDim - integer that correlates to the number of coupled differential equations
+                in the problem. this can be removed in the future by extracting the size of the array of IC 
+                I can't do this though...
+            sol - an array that stores the solution of integration, see either C main or python main for correct variable instantiation
+    Outputs: none
+
+    Author: Hunter Quebedeaux
+           6/14/23 
+    */
+
     double t = 0; int i;
 
     double y[problemDim], fReturn[problemDim], yy[problemDim];
@@ -29,9 +49,20 @@ void rk4(void func(double, double[] ,double[]), double IC[], double a, double b,
     for (i = 0;i<problemDim;i++)
         y[i] = IC[i];
 
-    out2Term(t,y,problemDim);
+    int length = b/h;
+
+    int row = 0;
+
+    for (i = 0; i < problemDim; i++)
+    {
+        sol[row * problemDim + i] = y[i];
+    }
+
+    // out2Term(t,y,problemDim);
+
     while (t < b)
     {
+        row++;
         double k1[problemDim], k2[problemDim], k3[problemDim], k4[problemDim];
 
         func(t,y,fReturn);
@@ -64,8 +95,13 @@ void rk4(void func(double, double[] ,double[]), double IC[], double a, double b,
             k4[i] = h * fReturn[i];
             y[i] = y[i] + (k1[i]+2*k2[i]+2*k3[i]+k4[i])/6;
         }
+
+        for (i = 0; i < problemDim; i++)
+        {
+            sol[row*problemDim+i] = y[i];
+        }
+        // out2Term(t,y,problemDim);
         
-        out2Term(t,y,problemDim);
         t = t + h;
     }
 }
@@ -73,6 +109,7 @@ void rk4(void func(double, double[] ,double[]), double IC[], double a, double b,
 
 int main(void)
 {
+    // example of how to use in C
     int problemDim = 2;
     double a = 0;
     double b = 6.3;
@@ -84,9 +121,11 @@ int main(void)
     y[0] = 1;
     y[1] = 0;
 
-    // how do i get a returned array?
-    // i think i should pass a long 1d array to this, so that numpy arrays can access it straight from python
-    rk4(f,y,a,b,h,problemDim);
+    double *sol = (double *)malloc(numSteps * problemDim * sizeof(double));
 
+    rk4(f,y,a,b,h,problemDim,sol);
+    
+    free(sol);
     return 0;
+
 }
