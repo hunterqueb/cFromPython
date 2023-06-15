@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define INIT_ARRAY_LEN 50
 
 void f(double t, double y[], double fReturn[])
 {
@@ -38,21 +37,20 @@ void out2Term(double t, double y[], int problemDim)
     printf("\n");
 }
 
-int main(void)
+void rk45(void func(double, double[], double[]), double *IC, double a, double b, int problemDim, double Tol,double *sol)
 {
-    FILE *fp;
-    fp = fopen("rk45.dat", "w"); // output file name
+    double Tol = 1.0E-8; // error control tolerance
+
+    int currentArrayLength = 50;
 
     int problemDim = 4;
 
-    double *sol = (double *)malloc(INIT_ARRAY_LEN * problemDim * sizeof(double));
+    double *sol = (double *)malloc(currentArrayLength * problemDim * sizeof(double));
     int row = 0, col = 0;
-    int arrSize = INIT_ARRAY_LEN;
 
     // time length, tolerance
     double a = 0;        // endpoints in calculation
-    double b = 1000;
-    double Tol = 1.0E-8; // error control tolerance
+    double b = 10;
 
     // utility variable definitions
     double h, t, s, s1, hmin, hmax;
@@ -63,7 +61,6 @@ int main(void)
 
     // initializing function and initial conditions
     double y[problemDim], fReturn[problemDim], ydumb[problemDim];
-    void f(double t, double y[], double fReturn[]);
     y[0] = 1;
     y[1] = 0;
     y[2] = -1;
@@ -75,14 +72,13 @@ int main(void)
     t = a;
     j = 0;
 
-    out2File(t, y, problemDim, fp);
-
     while (t < b)
     {
+        row++;
         if ((t + h) > b)
             h = b - t; // last step
 
-        f(t, y, fReturn);
+        func(t, y, fReturn);
 
         for (i = 0; i < problemDim; i++)
         {
@@ -90,7 +86,7 @@ int main(void)
             ydumb[i] = y[i] + k1[i] / 4;
         }
 
-        f(t + h / 4, ydumb, fReturn);
+        func(t + h / 4, ydumb, fReturn);
 
         for (i = 0; i < problemDim; i++)
         {
@@ -98,7 +94,7 @@ int main(void)
             ydumb[i] = y[i] + 3 * k1[i] / 32 + 9 * k2[i] / 32;
         }
 
-        f(t + 3 * h / 8, ydumb, fReturn);
+        func(t + 3 * h / 8, ydumb, fReturn);
 
         for (i = 0; i < problemDim; i++)
         {
@@ -106,7 +102,7 @@ int main(void)
             ydumb[i] = y[i] + 1932 * k1[i] / 2197 - 7200 * k2[i] / 2197 + 7296 * k3[i] / 2197;
         }
 
-        f(t + 12 * h / 13, ydumb, fReturn);
+        func(t + 12 * h / 13, ydumb, fReturn);
         
         for (i = 0; i < problemDim; i++)
         {
@@ -114,7 +110,7 @@ int main(void)
             ydumb[i] = y[i] + 439 * k1[i] / 216 - 8 * k2[i] + 3680 * k3[i] / 513 - 845 * k4[i] / 4104;
         }
 
-        f(t + h, ydumb, fReturn);
+        func(t + h, ydumb, fReturn);
 
         for (i = 0; i < problemDim; i++)
         {
@@ -122,7 +118,7 @@ int main(void)
             ydumb[i] = y[i] - 8 * k1[i] / 27 - 2 * k2[i] - 3544 * k3[i] / 2565 + 1859 * k4[i] / 4104 - 11 * k5[i] / 40;
         }
 
-        f(t + h / 2, ydumb, fReturn);
+        func(t + h / 2, ydumb, fReturn);
 
         for (i = 0; i < problemDim; i++)
         {
@@ -143,12 +139,22 @@ int main(void)
         else if ((s > 1.5) && (2 * h < hmax))
             h *= 2;                                   // increase step
         
+        // check to see if you need to dynamically allocate new array space
+        if (row == currentArrayLength)
+        {
+            currentArrayLength = (int) currentArrayLength * 1.5;
+            sol = (double *)realloc(sol,currentArrayLength * problemDim * sizeof(double));
+        }
+
+
         // end of a loop, here is where you would report the variables
-        out2File(t,y,problemDim,fp);
-        out2Term(t,y,problemDim);
-        saveArray(y,sol);
+        for (i = 0; i < problemDim; i++)
+        {
+            sol[row * problemDim + i] = y[i];
+        }
+        out2Term(t, y, problemDim);
     }
-    fclose(fp);
+    
     free(sol);
     return 0;
 }
