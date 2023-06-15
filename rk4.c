@@ -42,14 +42,21 @@ void rk4(void func(double, double[] ,double[]), double *IC, double a, double b, 
            6/14/23 
     */
 
-    double t = 0; int i;
+    double t = a; int i;
 
     double y[problemDim], fReturn[problemDim], yy[problemDim];
 
     for (i = 0;i<problemDim;i++)
         y[i] = IC[i];
 
-    int length = b/h;
+    double largestTime;
+    if(a > b)
+        largestTime = a;
+    else
+        largestTime = b;
+
+    int length = fabs(largestTime/h) + 1;
+    // printf("%d", length);
 
     int row = 0;
 
@@ -58,9 +65,9 @@ void rk4(void func(double, double[] ,double[]), double *IC, double a, double b, 
         sol[row * problemDim + i] = y[i];
     }
 
-    // out2Term(t,y,problemDim);
+    out2Term(t,y,problemDim);
 
-    while (t < b)
+    while (row < length)
     {
         row++;
         double k1[problemDim], k2[problemDim], k3[problemDim], k4[problemDim];
@@ -100,22 +107,26 @@ void rk4(void func(double, double[] ,double[]), double *IC, double a, double b, 
         {
             sol[row*problemDim+i] = y[i];
         }
-        // out2Term(t,y,problemDim);
         
         t = t + h;
+        out2Term(t,y,problemDim);
     }
 }
-
 
 int main(void)
 {
     // example of how to use in C
     int problemDim = 2;
     double a = 0;
-    double b = 6.3;
+    double b = 7;
     double h = 0.1;
 
-    int numSteps = b/h;
+    double largestTime;
+    if (a > b)
+        largestTime = a;
+    else
+        largestTime = b;
+    int numSteps = fabs(largestTime / h);
 
     double y[problemDim];
     y[0] = 1;

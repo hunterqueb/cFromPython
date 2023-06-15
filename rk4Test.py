@@ -6,15 +6,20 @@ from ctypes import *
 libc = CDLL('./lib_rk4.so')
 libFunctions = CDLL('./lib_functions.so')
 
-IC = np.array((1,0),dtype=np.double)
+IC = np.array((0.753906,-0.656982),dtype=np.double)
 IC_c = np.ctypeslib.as_ctypes(IC)
-print(IC_c[0])
 
-tStart = 0
-tEnd = 7
-h = 0.01
+tStart = 7
+tEnd = 0
+h = -0.1
 problemDim = 2
-length = int(tEnd / h) + 1
+
+if(tStart > tEnd):
+    largestTime = tStart
+else:
+    largestTime = tEnd
+
+length = int(np.abs(largestTime / h)) + 1
 
 # create a 2d array and send it as a single list of pointers to C
 sol = np.zeros((length,problemDim),dtype=np.double)
